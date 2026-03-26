@@ -1,33 +1,1568 @@
 <!DOCTYPE html>
 <html lang="ja">
-  <head>
-    <meta charset="UTF-8">
-    <title>LINE Harness </title>
-  </head>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>LINE Harness 管理画面</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:sans-serif;background:#0f1117;color:#e2e8f0;display:flex;min-height:100vh}
-    .sidebar{width:240px;background:#161b27;border-right:1px solid #1e2738;display:flex;flex-direction:column;position:fixed;height:100vh}
-    .logo{padding:24px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #1e2738}
-    .nav-item{padding:10px 12px;color:#94a3b8;cursor:pointer}
-    .nav-item.active{background:#1e2d40;color:#06c755}
-    .main{margin-left:240px;flex:1;padding:28px}
-    .card{background:#161b27;border:1px solid #1e2738;border-radius:14px;padding:20px;margin-bottom:16px}
-    </style>
-</html>head>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0f1117;
+      color: #e2e8f0;
+      display: flex;
+      min-height: 100vh
+    }
+
+    .sidebar {
+      width: 240px;
+      background: #161b27;
+      border-right: 1px solid #1e2738;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      height: 100vh;
+      z-index: 100
+    }
+
+    .logo {
+      padding: 24px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid #1e2738
+    }
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #06c755, #00a040);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 18px;
+      color: #fff
+    }
+
+    .logo-text {
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff
+    }
+
+    .logo-sub {
+      font-size: 11px;
+      color: #64748b
+    }
+
+    nav {
+      flex: 1;
+      padding: 16px 12px;
+      overflow-y: auto
+    }
+
+    .nav-section {
+      font-size: 10px;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      padding: 8px 8px 4px
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      color: #94a3b8;
+      font-size: 14px;
+      margin-bottom: 2px;
+      transition: all .2s
+    }
+
+    .nav-item:hover,
+    .nav-item.active {
+      background: #1e2d40;
+      color: #06c755
+    }
+
+    .nav-item.active {
+      color: #06c755;
+      font-weight: 600
+    }
+
+    .nav-icon {
+      font-size: 16px;
+      width: 20px;
+      text-align: center
+    }
+
+    .badge {
+      margin-left: auto;
+      background: #06c755;
+      color: #fff;
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 20px;
+      font-weight: 600
+    }
+
+    .sidebar-footer {
+      padding: 16px;
+      border-top: 1px solid #1e2738
+    }
+
+    .user-card {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      background: #1e2738;
+      border-radius: 10px
+    }
+
+    .avatar {
+      width: 34px;
+      height: 34px;
+      background: linear-gradient(135deg, #06c755, #00a040);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 13px;
+      color: #fff
+    }
+
+    .user-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #e2e8f0
+    }
+
+    .user-role {
+      font-size: 11px;
+      color: #64748b
+    }
+
+    .main {
+      margin-left: 240px;
+      flex: 1;
+      padding: 28px;
+      overflow-y: auto;
+      min-height: 100vh
+    }
+
+    .page {
+      display: none
+    }
+
+    .page.active {
+      display: block
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 28px
+    }
+
+    .page-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: #fff
+    }
+
+    .page-sub {
+      font-size: 13px;
+      color: #64748b;
+      margin-top: 2px
+    }
+
+    .btn {
+      padding: 9px 18px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all .2s
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #06c755, #00a040);
+      color: #fff
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 15px rgba(6, 199, 85, .4)
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid #2d3748;
+      color: #94a3b8
+    }
+
+    .btn-outline:hover {
+      border-color: #06c755;
+      color: #06c755
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 24px
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-bottom: 24px
+    }
+
+    .card {
+      background: #161b27;
+      border: 1px solid #1e2738;
+      border-radius: 14px;
+      padding: 20px
+    }
+
+    .kpi {
+      position: relative;
+      overflow: hidden
+    }
+
+    .kpi-label {
+      font-size: 12px;
+      color: #64748b;
+      font-weight: 500;
+      margin-bottom: 8px
+    }
+
+    .kpi-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 4px
+    }
+
+    .kpi-change {
+      font-size: 12px
+    }
+
+    .up {
+      color: #06c755
+    }
+
+    .down {
+      color: #ef4444
+    }
+
+    .kpi-icon {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      font-size: 28px;
+      opacity: .4
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between
+    }
+
+    .chart-bars {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      height: 120px;
+      margin-bottom: 8px
+    }
+
+    .bar-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px
+    }
+
+    .bar {
+      width: 100%;
+      background: linear-gradient(180deg, #06c755, #00a040);
+      border-radius: 4px 4px 0 0;
+      cursor: pointer
+    }
+
+    .bar:hover {
+      opacity: .8
+    }
+
+    .bar-label {
+      font-size: 10px;
+      color: #64748b
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse
+    }
+
+    th {
+      font-size: 11px;
+      color: #64748b;
+      text-align: left;
+      padding: 10px 12px;
+      border-bottom: 1px solid #1e2738;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: .5px
+    }
+
+    td {
+      padding: 12px;
+      border-bottom: 1px solid #1e273820;
+      font-size: 13px
+    }
+
+    tr:last-child td {
+      border: none
+    }
+
+    tr:hover td {
+      background: #1e273830
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600
+    }
+
+    .tag-green {
+      background: #06c75520;
+      color: #06c755
+    }
+
+    .tag-blue {
+      background: #3b82f620;
+      color: #3b82f6
+    }
+
+    .tag-yellow {
+      background: #f59e0b20;
+      color: #f59e0b
+    }
+
+    .tag-red {
+      background: #ef444420;
+      color: #ef4444
+    }
+
+    .tag-gray {
+      background: #1e273860;
+      color: #64748b
+    }
+
+    .progress {
+      height: 6px;
+      background: #1e2738;
+      border-radius: 3px;
+      overflow: hidden
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #06c755, #00a040);
+      border-radius: 3px
+    }
+
+    .av {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0
+    }
+
+    .toggle {
+      width: 38px;
+      height: 20px;
+      background: #1e2738;
+      border-radius: 20px;
+      position: relative;
+      cursor: pointer;
+      transition: background .2s
+    }
+
+    .toggle.on {
+      background: #06c755
+    }
+
+    .toggle::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 14px;
+      height: 14px;
+      background: #fff;
+      border-radius: 50%;
+      transition: left .2s
+    }
+
+    .toggle.on::after {
+      left: 21px
+    }
+
+    .search-bar {
+      position: relative;
+      margin-bottom: 20px
+    }
+
+    .search-bar input {
+      width: 100%;
+      background: #1e2738;
+      border: 1px solid #2d3748;
+      border-radius: 10px;
+      padding: 10px 14px 10px 38px;
+      color: #e2e8f0;
+      font-size: 13px;
+      outline: none;
+      transition: border-color .2s
+    }
+
+    .search-bar input:focus {
+      border-color: #06c755
+    }
+
+    .search-bar::before {
+      content: '🔍';
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 14px
+    }
+
+    .flow-arrow {
+      text-align: center;
+      color: #06c755;
+      font-size: 20px;
+      margin: 4px 0
+    }
+
+    .flow-step {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px
+    }
+
+    .step-num {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #06c75520;
+      color: #06c755;
+      font-size: 11px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0
+    }
+
+    .modal-bg {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #00000080;
+      z-index: 200;
+      align-items: center;
+      justify-content: center
+    }
+
+    .modal-bg.open {
+      display: flex
+    }
+
+    .modal {
+      background: #161b27;
+      border: 1px solid #1e2738;
+      border-radius: 16px;
+      padding: 28px;
+      width: 500px
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 20px
+    }
+
+    .form-group {
+      margin-bottom: 16px
+    }
+
+    .form-label {
+      font-size: 12px;
+      color: #94a3b8;
+      margin-bottom: 6px;
+      display: block
+    }
+
+    .form-input {
+      width: 100%;
+      background: #1e2738;
+      border: 1px solid #2d3748;
+      border-radius: 8px;
+      padding: 10px 12px;
+      color: #e2e8f0;
+      font-size: 13px;
+      outline: none;
+      transition: border-color .2s
+    }
+
+    .form-input:focus {
+      border-color: #06c755
+    }
+
+    .form-row {
+      display: flex;
+      gap: 12px
+    }
+
+    .form-row .form-group {
+      flex: 1
+    }
+
+    .donut {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: conic-gradient(#06c755 0% 62%, #3b82f6 62% 82%, #f59e0b 82% 93%, #1e2738 93% 100%);
+      position: relative;
+      margin: 0 auto 12px
+    }
+
+    .donut::after {
+      content: '62%';
+      position: absolute;
+      inset: 20px;
+      background: #161b27;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: #fff;
+      font-size: 15px
+    }
+
+    .legend {
+      display: flex;
+      flex-direction: column;
+      gap: 6px
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: #94a3b8
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0
+    }
+
+    .notif {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #06c755;
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      z-index: 300;
+      transform: translateX(200px);
+      opacity: 0;
+      transition: all .3s
+    }
+
+    .notif.show {
+      transform: translateX(0);
+      opacity: 1
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      align-items: center;
+      font-size: 13px
+    }
+
+    .stat-row span:first-child {
+      color: #94a3b8
+    }
+
+    .stat-row span:last-child {
+      color: #fff;
+      font-weight: 600
+    }
+
+    .timeline {
+      display: flex;
+      flex-direction: column
+    }
+
+    .tl-item {
+      display: flex;
+      gap: 12px;
+      padding-bottom: 16px;
+      position: relative
+    }
+
+    .tl-item::before {
+      content: '';
+      position: absolute;
+      left: 14px;
+      top: 28px;
+      bottom: 0;
+      width: 1px;
+      background: #1e2738
+    }
+
+    .tl-item:last-child::before {
+      display: none
+    }
+
+    .tl-dot {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #06c75520;
+      border: 2px solid #06c755;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      flex-shrink: 0;
+      margin-top: 2px
+    }
+
+    .tl-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #e2e8f0
+    }
+
+    .tl-time {
+      font-size: 11px;
+      color: #64748b;
+      margin-top: 2px
+    }
+
+    .tl-body {
+      font-size: 12px;
+      color: #94a3b8;
+      margin-top: 4px;
+      background: #1e273850;
+      border-radius: 6px;
+      padding: 8px
+    }
+  </style>
+</head>
+
 <body>
   <div class="sidebar">
-      <div class="logo"><h2>H</h2><div><div>LINE Harness</div><div>Admin</div></div></div>
-    <nav><div class="nav-item active">Dashboard</div>div><div class="nav-item">Users</div>div><div class="nav-item">Settings</div>div></nav>
+    <div class="logo">
+      <div class="logo-icon">H</div>
+      <div>
+        <div class="logo-text">LINE Harness</div>
+        <div class="logo-sub">管理画面</div>
+      </div>
+    </div>
+    <nav>
+      <div class="nav-section">メイン</div>
+      <div class="nav-item active" onclick="showPage('dashboard',this)"><span class="nav-icon">📊</span>ダッシュボード</div>
+      <div class="nav-item" onclick="showPage('users',this)"><span class="nav-icon">👥</span>ユーザー管理<span
+          class="badge">1,284</span></div>
+      <div class="nav-section">配信</div>
+      <div class="nav-item" onclick="showPage('messages',this)"><span class="nav-icon">💬</span>メッセージ配信</div>
+      <div class="nav-item" onclick="showPage('scenarios',this)"><span class="nav-icon">🔄</span>シナリオ管理</div>
+      <div class="nav-item" onclick="showPage('schedule',this)"><span class="nav-icon">📅</span>スケジュール配信</div>
+      <div class="nav-section">分析</div>
+      <div class="nav-item" onclick="showPage('analytics',this)"><span class="nav-icon">📈</span>アナリティクス</div>
+      <div class="nav-item" onclick="showPage('segments',this)"><span class="nav-icon">🏷️</span>セグメント</div>
+      <div class="nav-section">設定</div>
+      <div class="nav-item" onclick="showPage('settings',this)"><span class="nav-icon">⚙️</span>設定</div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-card">
+        <div class="avatar">R</div>
+        <div>
+          <div class="user-name">りんちゃん</div>
+          <div class="user-role">管理者</div>
+        </div>
+      </div>
+    </div>
   </div>
-<div class="main">
-  <h2>Dashboard</h2>
-  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px">
-      <div class="card"><h3>Total Users</h3><p>1,284</p></div>
-      <div class="card"><h3>Messages</h3><p>3,672</p></div>
+  <div class="notif" id="notif"></div>
+  <div class="main">
+    <div class="page active" id="page-dashboard">
+      <div class="page-header">
+        <div>
+          <div class="page-title">ダッシュボード</div>
+          <div class="page-sub">2026年3月26日 — 概要レポート</div>
+        </div>
+        <button class="btn btn-primary" onclick="notify('レポートをエクスポートしました')">📥 エクスポート</button>
+      </div>
+      <div class="grid-4">
+        <div class="card kpi">
+          <div class="kpi-icon">👥</div>
+          <div class="kpi-label">総友だち数</div>
+          <div class="kpi-value">1,284</div>
+          <div class="kpi-change up">↑ +48 今月</div>
+        </div>
+        <div class="card kpi">
+          <div class="kpi-icon">📨</div>
+          <div class="kpi-label">今月の配信数</div>
+          <div class="kpi-value">3,672</div>
+          <div class="kpi-change up">↑ +12%</div>
+        </div>
+        <div class="card kpi">
+          <div class="kpi-icon">📬</div>
+          <div class="kpi-label">平均開封率</div>
+          <div class="kpi-value">68.4%</div>
+          <div class="kpi-change up">↑ +3.2pt</div>
+        </div>
+        <div class="card kpi">
+          <div class="kpi-icon">🖱️</div>
+          <div class="kpi-label">平均クリック率</div>
+          <div class="kpi-value">24.1%</div>
+          <div class="kpi-change down">↓ -1.5pt</div>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">週別配信数</div>
+          <div class="chart-bars">
+            <div class="bar-wrap">
+              <div class="bar" style="height:60%"></div>
+              <div class="bar-label">月</div>
+            </div>
+            <div class="bar-wrap">
+              <div class="bar" style="height:80%"></div>
+              <div class="bar-label">火</div>
+            </div>
+            <div class="bar-wrap">
+              <div class="bar" style="height:45%"></div>
+              <div class="bar-label">水</div>
+            </div>
+            <div class="bar-wrap">
+              <div class="bar" style="height:90%"></div>
+              <div class="bar-label">木</div>
+            </div>
+            <div class="bar-wrap">
+              <div class="bar" style="height:70%"></div>
+              <div class="bar-label">金</div>
+            </div>
+            <div class="bar-wrap">
+              <div class="bar" style="height:55%"></div>
+              <div class="bar-label">土</div>
+            </div>
+            <div class="bar-wrap">
+              <div class="bar" style="height:40%"></div>
+              <div class="bar-label">日</div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">友だち属性</div>
+          <div style="display:flex;align-items:center;gap:24px">
+            <div class="donut"></div>
+            <div class="legend">
+              <div class="legend-item">
+                <div class="legend-dot" style="background:#06c755"></div>アクティブ (62%)
+              </div>
+              <div class="legend-item">
+                <div class="legend-dot" style="background:#3b82f6"></div>非アクティブ (20%)
+              </div>
+              <div class="legend-item">
+                <div class="legend-dot" style="background:#f59e0b"></div>ブロック待ち (11%)
+              </div>
+              <div class="legend-item">
+                <div class="legend-dot" style="background:#374151"></div>退出 (7%)
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">最近のアクティビティ</div>
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-dot">💬</div>
+            <div>
+              <div class="tl-title">ステップ配信 #3 送信完了</div>
+              <div class="tl-time">10分前</div>
+              <div class="tl-body">対象: 新規ユーザーセグメント / 送信数: 248件 / 開封率: 71%</div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot">👥</div>
+            <div>
+              <div class="tl-title">新規友だち 12名追加</div>
+              <div class="tl-time">1時間前</div>
+              <div class="tl-body">紹介リンク経由: 8名 / QRコード: 4名</div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot">🔄</div>
+            <div>
+              <div class="tl-title">シナリオ「購入後フォロー」更新</div>
+              <div class="tl-time">3時間前</div>
+              <div class="tl-body">ステップ5を追加。配信スケジュール: 購入後7日後</div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot">📊</div>
+            <div>
+              <div class="tl-title">月次レポート生成完了</div>
+              <div class="tl-time">昨日 18:00</div>
+              <div class="tl-body">2026年3月レポートが生成されました</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="page" id="page-users">
+      <div class="page-header">
+        <div>
+          <div class="page-title">ユーザー管理</div>
+          <div class="page-sub">全 1,284 名の友だち</div>
+        </div>
+        <div style="display:flex;gap:10px">
+          <button class="btn btn-outline" onclick="notify('CSVをエクスポートしました')">📥 エクスポート</button>
+          <button class="btn btn-primary" onclick="openModal('user-modal')">＋ ユーザー追加</button>
+        </div>
+      </div>
+      <div class="search-bar"><input type="text" placeholder="名前・LINE ID・タグで検索..."></div>
+      <div class="card">
+        <table>
+          <thead>
+            <tr>
+              <th>ユーザー</th>
+              <th>ステータス</th>
+              <th>タグ</th>
+              <th>登録日</th>
+              <th>最終アクティビティ</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <div style="display:flex;align-items:center;gap:10px">
+                  <div class="av">田</div>
+                  <div>
+                    <div style="font-weight:600">田中 美咲</div>
+                    <div style="font-size:11px;color:#64748b">@tanaka_misaki</div>
+                  </div>
+                </div>
+              </td>
+              <td><span class="tag tag-green">アクティブ</span></td>
+              <td><span class="tag tag-blue">VIP</span> <span class="tag tag-yellow">購入済</span></td>
+              <td>2026/01/15</td>
+              <td>2時間前</td>
+              <td><button class="btn btn-outline" style="padding:5px 12px;font-size:11px"
+                  onclick="notify('詳細を開きました')">詳細</button></td>
+            </tr>
+            <tr>
+              <td>
+                <div style="display:flex;align-items:center;gap:10px">
+                  <div class="av" style="background:linear-gradient(135deg,#f59e0b,#ef4444)">鈴</div>
+                  <div>
+                    <div style="font-weight:600">鈴木 健太</div>
+                    <div style="font-size:11px;color:#64748b">@suzuki_kenta</div>
+                  </div>
+                </div>
+              </td>
+              <td><span class="tag tag-green">アクティブ</span></td>
+              <td><span class="tag tag-blue">新規</span></td>
+              <td>2026/03/20</td>
+              <td>30分前</td>
+              <td><button class="btn btn-outline" style="padding:5px 12px;font-size:11px"
+                  onclick="notify('詳細を開きました')">詳細</button></td>
+            </tr>
+            <tr>
+              <td>
+                <div style="display:flex;align-items:center;gap:10px">
+                  <div class="av" style="background:linear-gradient(135deg,#8b5cf6,#3b82f6)">佐</div>
+                  <div>
+                    <div style="font-weight:600">佐藤 花</div>
+                    <div style="font-size:11px;color:#64748b">@sato_hana</div>
+                  </div>
+                </div>
+              </td>
+              <td><span class="tag tag-yellow">非アクティブ</span></td>
+              <td><span class="tag tag-gray">未分類</span></td>
+              <td>2025/11/03</td>
+              <td>14日前</td>
+              <td><button class="btn btn-outline" style="padding:5px 12px;font-size:11px"
+                  onclick="notify('詳細を開きました')">詳細</button></td>
+            </tr>
+            <tr>
+              <td>
+                <div style="display:flex;align-items:center;gap:10px">
+                  <div class="av" style="background:linear-gradient(135deg,#06c755,#00a040)">山</div>
+                  <div>
+                    <div style="font-weight:600">山田 太郎</div>
+                    <div style="font-size:11px;color:#64748b">@yamada_taro</div>
+                  </div>
+                </div>
+              </td>
+              <td><span class="tag tag-green">アクティブ</span></td>
+              <td><span class="tag tag-blue">VIP</span> <span class="tag tag-green">リピーター</span></td>
+              <td>2025/09/18</td>
+              <td>1時間前</td>
+              <td><button class="btn btn-outline" style="padding:5px 12px;font-size:11px"
+                  onclick="notify('詳細を開きました')">詳細</button></td>
+            </tr>
+            <tr>
+              <td>
+                <div style="display:flex;align-items:center;gap:10px">
+                  <div class="av" style="background:linear-gradient(135deg,#ef4444,#f59e0b)">伊</div>
+                  <div>
+                    <div style="font-weight:600">伊藤 しおり</div>
+                    <div style="font-size:11px;color:#64748b">@ito_shiori</div>
+                  </div>
+                </div>
+              </td>
+              <td><span class="tag tag-red">ブロック</span></td>
+              <td><span class="tag tag-gray">-</span></td>
+              <td>2025/12/01</td>
+              <td>30日前</td>
+              <td><button class="btn btn-outline" style="padding:5px 12px;font-size:11px"
+                  onclick="notify('詳細を開きました')">詳細</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="page" id="page-messages">
+      <div class="page-header">
+        <div>
+          <div class="page-title">メッセージ配信</div>
+          <div class="page-sub">一斉配信・個別送信</div>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('msg-modal')">✉️ 新規作成</button>
+      </div>
+      <div class="grid-3" style="margin-bottom:24px">
+        <div class="card kpi">
+          <div class="kpi-icon">✅</div>
+          <div class="kpi-label">配信完了</div>
+          <div class="kpi-value">24</div>
+        </div>
+        <div class="card kpi">
+          <div class="kpi-icon">⏳</div>
+          <div class="kpi-label">スケジュール中</div>
+          <div class="kpi-value">5</div>
+        </div>
+        <div class="card kpi">
+          <div class="kpi-icon">📝</div>
+          <div class="kpi-label">下書き</div>
+          <div class="kpi-value">3</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">配信履歴</div>
+        <table>
+          <thead>
+            <tr>
+              <th>タイトル</th>
+              <th>ターゲット</th>
+              <th>送信数</th>
+              <th>開封率</th>
+              <th>状態</th>
+              <th>配信日時</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="font-weight:600">3月キャンペーン告知</td>
+              <td>全ユーザー</td>
+              <td>1,284</td>
+              <td>
+                <div style="display:flex;align-items:center;gap:8px">72%<div style="flex:1;max-width:60px">
+                    <div class="progress">
+                      <div class="progress-fill" style="width:72%"></div>
+                    </div>
+                  </div>
+                </div>
+              </td>
+              <td><span class="tag tag-green">完了</span></td>
+              <td>03/25 10:00</td>
+            </tr>
+            <tr>
+              <td style="font-weight:600">新商品お知らせ</td>
+              <td>VIPセグメント</td>
+              <td>312</td>
+              <td>
+                <div style="display:flex;align-items:center;gap:8px">81%<div style="flex:1;max-width:60px">
+                    <div class="progress">
+                      <div class="progress-fill" style="width:81%"></div>
+                    </div>
+                  </div>
+                </div>
+              </td>
+              <td><span class="tag tag-green">完了</span></td>
+              <td>03/22 14:30</td>
+            </tr>
+            <tr>
+              <td style="font-weight:600">4月イベント事前案内</td>
+              <td>リピーター</td>
+              <td>-</td>
+              <td>-</td>
+              <td><span class="tag tag-yellow">予定</span></td>
+              <td>04/01 10:00</td>
+            </tr>
+            <tr>
+              <td style="font-weight:600">春の感謝メッセージ</td>
+              <td>全ユーザー</td>
+              <td>-</td>
+              <td>-</td>
+              <td><span class="tag tag-gray">下書き</span></td>
+              <td>-</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="page" id="page-scenarios">
+      <div class="page-header">
+        <div>
+          <div class="page-title">シナリオ管理</div>
+          <div class="page-sub">ステップ配信フローの管理</div>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('scenario-modal')">＋ 新規シナリオ</button>
+      </div>
+      <div class="grid-3">
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
+            <div>
+              <div style="font-size:15px;font-weight:700;color:#fff">ウェルカムシナリオ</div>
+              <div style="font-size:11px;color:#64748b;margin-top:2px">友だち追加トリガー</div>
+            </div>
+            <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+          </div>
+          <div style="margin-bottom:12px">
+            <div class="flow-step">
+              <div class="step-num">1</div>
+              <div style="font-size:12px">即時: ウェルカムメッセージ</div>
+            </div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step">
+              <div class="step-num">2</div>
+              <div style="font-size:12px">1日後: 商品紹介</div>
+            </div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step">
+              <div class="step-num">3</div>
+              <div style="font-size:12px">3日後: 特典クーポン</div>
+            </div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step">
+              <div class="step-num">4</div>
+              <div style="font-size:12px">7日後: レビュー依頼</div>
+            </div>
+          </div>
+          <div
+            style="display:flex;justify-content:space-between;font-size:11px;color:#64748b;border-top:1px solid #1e2738;padding-top:10px">
+            <span>稼働中 248名</span><button class="btn btn-outline" style="padding:4px 12px;font-size:11px"
+              onclick="notify('シナリオを編集します')">編集</button>
+          </div>
+        </div>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
+            <div>
+              <div style="font-size:15px;font-weight:700;color:#fff">購入後フォロー</div>
+              <div style="font-size:11px;color:#64748b;margin-top:2px">購入完了トリガー</div>
+            </div>
+            <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+          </div>
+          <div style="margin-bottom:12px">
+            <div class="flow-step">
+              <div class="step-num">1</div>
+              <div style="font-size:12px">即時: お礼メッセージ</div>
+            </div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step">
+              <div class="step-num">2</div>
+              <div style="font-size:12px">3日後: 使い方ガイド</div>
+            </div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step">
+              <div class="step-num">3</div>
+              <div style="font-size:12px">7日後: 満足度アンケート</div>
+            </div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step">
+              <div class="step-num">4</div>
+              <div style="font-size:12px">14日後: リピート促進</div>
+            </div>
+          </div>
+          <div
+            style="display:flex;justify-content:space-between;font-size:11px;color:#64748b;border-top:1px solid #1e2738;padding-top:10px">
+            <span>稼働中 126名</span><button class="btn btn-outline" style="padding:4px 12px;font-size:11px"
+              onclick="notify('シナリオを編集します')">編集</button>
+          </div>
+        </div>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
+            <div>
+              <div style="font-size:15px;font-weight:700;color:#fff">休眠ユーザー復活</div>
+              <div style="font-size:11px;color:#64748b;margin-top:2px">30日未アクティブ</div>
+            </div>
+            <div class="toggle" onclick="this.classList.toggle('on')"></div>
+          </div>
+          <div style="margin-bottom:12px">
+            <div class="flow-step">
+              <div class="step-num">1</div>
+              <div style="font-size:12px">即時: 近況確認メッセージ</div>
+            </div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step">
+              <div class="step-num">2</div>
+              <div style="font-size:12px">3日後: 特別割引オファー</div>
+            </div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step">
+              <div class="step-num">3</div>
+              <div style="font-size:12px">7日後: 最終フォロー</div>
+            </div>
+          </div>
+          <div
+            style="display:flex;justify-content:space-between;font-size:11px;color:#64748b;border-top:1px solid #1e2738;padding-top:10px">
+            <span>停止中</span><button class="btn btn-outline" style="padding:4px 12px;font-size:11px"
+              onclick="notify('シナリオを編集します')">編集</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="page" id="page-schedule">
+      <div class="page-header">
+        <div>
+          <div class="page-title">スケジュール配信</div>
+          <div class="page-sub">予約配信の管理</div>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('msg-modal')">＋ 予約作成</button>
+      </div>
+      <div class="card">
+        <div class="card-title">予約済み配信</div>
+        <table>
+          <thead>
+            <tr>
+              <th>タイトル</th>
+              <th>ターゲット</th>
+              <th>配信日時</th>
+              <th>繰り返し</th>
+              <th>状態</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="font-weight:600">4月イベント事前案内</td>
+              <td>リピーターセグメント</td>
+              <td>04/01 (水) 10:00</td>
+              <td>なし</td>
+              <td><span class="tag tag-blue">予約済</span></td>
+              <td><button class="btn btn-outline" style="padding:5px 12px;font-size:11px"
+                  onclick="notify('編集しました')">編集</button></td>
+            </tr>
+            <tr>
+              <td style="font-weight:600">週次ニュースレター</td>
+              <td>全ユーザー</td>
+              <td>毎週月曜 09:00</td>
+              <td>毎週</td>
+              <td><span class="tag tag-green">稼働中</span></td>
+              <td><button class="btn btn-outline" style="padding:5px 12px;font-size:11px"
+                  onclick="notify('編集しました')">編集</button></td>
+            </tr>
+            <tr>
+              <td style="font-weight:600">GW特別オファー</td>
+              <td>VIPセグメント</td>
+              <td>04/28 (火) 08:00</td>
+              <td>なし</td>
+              <td><span class="tag tag-yellow">下書き</span></td>
+              <td><button class="btn btn-outline" style="padding:5px 12px;font-size:11px"
+                  onclick="notify('編集しました')">編集</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="page" id="page-analytics">
+      <div class="page-header">
+        <div>
+          <div class="page-title">アナリティクス</div>
+          <div class="page-sub">詳細パフォーマンスレポート</div>
+        </div>
+        <button class="btn btn-outline" onclick="notify('レポートをダウンロードしました')">📥 レポート出力</button>
+      </div>
+      <div class="grid-4">
+        <div class="card kpi">
+          <div class="kpi-icon">📬</div>
+          <div class="kpi-label">平均開封率</div>
+          <div class="kpi-value">68.4%</div>
+          <div class="kpi-change up">↑ 業界平均+18pt</div>
+        </div>
+        <div class="card kpi">
+          <div class="kpi-icon">🖱️</div>
+          <div class="kpi-label">平均CTR</div>
+          <div class="kpi-value">24.1%</div>
+          <div class="kpi-change up">↑ 先月比+3.2pt</div>
+        </div>
+        <div class="card kpi">
+          <div class="kpi-icon">🔁</div>
+          <div class="kpi-label">コンバージョン率</div>
+          <div class="kpi-value">8.7%</div>
+          <div class="kpi-change up">↑ +1.1pt</div>
+        </div>
+        <div class="card kpi">
+          <div class="kpi-icon">📊</div>
+          <div class="kpi-label">総配信数(月)</div>
+          <div class="kpi-value">3,672</div>
+          <div class="kpi-change up">↑ +12%</div>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">月別開封率推移</div>
+          <div class="chart-bars">
+            <div class="bar-wrap">
+              <div class="bar" style="height:55%"></div>
+              <div class="bar-label">10月</div>
+            </div>
+            <div class="bar-wrap">
+              <div class="bar" style="height:60%"></div>
+              <div class="bar-label">11月</div>
+            </div>
+            <div class="bar-wrap">
+              <div class="bar" style="height:52%"></div>
+              <div class="bar-label">12月</div>
+            </div>
+            <div class="bar-wrap">
+              <div class="bar" style="height:65%"></div>
+              <div class="bar-label">1月</div>
+            </div>
+            <div class="bar-wrap">
+              <div class="bar" style="height:63%"></div>
+              <div class="bar-label">2月</div>
+            </div>
+            <div class="bar-wrap">
+              <div class="bar" style="height:68%"></div>
+              <div class="bar-label">3月</div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">チャネル別パフォーマンス</div>
+          <div class="stat-row"><span>一斉配信</span><span>68%</span></div>
+          <div style="margin-bottom:12px">
+            <div class="progress">
+              <div class="progress-fill" style="width:68%"></div>
+            </div>
+          </div>
+          <div class="stat-row"><span>シナリオ配信</span><span>81%</span></div>
+          <div style="margin-bottom:12px">
+            <div class="progress">
+              <div class="progress-fill" style="width:81%"></div>
+            </div>
+          </div>
+          <div class="stat-row"><span>個別送信</span><span>75%</span></div>
+          <div style="margin-bottom:12px">
+            <div class="progress">
+              <div class="progress-fill" style="width:75%"></div>
+            </div>
+          </div>
+          <div class="stat-row"><span>スケジュール</span><span>61%</span></div>
+          <div>
+            <div class="progress">
+              <div class="progress-fill" style="width:61%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="page" id="page-segments">
+      <div class="page-header">
+        <div>
+          <div class="page-title">セグメント管理</div>
+          <div class="page-sub">タグ・条件でユーザーを分類</div>
+        </div>
+        <button class="btn btn-primary" onclick="notify('セグメントを作成しました')">＋ セグメント作成</button>
+      </div>
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-title">VIP顧客 <span class="tag tag-blue">312名</span></div>
+          <div style="font-size:12px;color:#94a3b8;margin-bottom:12px">購入金額 ¥10,000以上のユーザー</div>
+          <div class="progress">
+            <div class="progress-fill" style="width:24%"></div>
+          </div>
+          <div style="font-size:11px;color:#64748b;margin-top:6px">全体の24.3%</div>
+          <div style="margin-top:12px"><button class="btn btn-outline"
+              style="padding:5px 12px;font-size:11px;width:100%" onclick="notify('配信対象に設定しました')">配信対象に設定</button></div>
+        </div>
+        <div class="card">
+          <div class="card-title">新規ユーザー <span class="tag tag-green">248名</span></div>
+          <div style="font-size:12px;color:#94a3b8;margin-bottom:12px">登録30日以内のユーザー</div>
+          <div class="progress">
+            <div class="progress-fill" style="width:19%"></div>
+          </div>
+          <div style="font-size:11px;color:#64748b;margin-top:6px">全体の19.3%</div>
+          <div style="margin-top:12px"><button class="btn btn-outline"
+              style="padding:5px 12px;font-size:11px;width:100%" onclick="notify('配信対象に設定しました')">配信対象に設定</button></div>
+        </div>
+        <div class="card">
+          <div class="card-title">リピーター <span class="tag tag-yellow">186名</span></div>
+          <div style="font-size:12px;color:#94a3b8;margin-bottom:12px">2回以上購入したユーザー</div>
+          <div class="progress">
+            <div class="progress-fill" style="width:14%"></div>
+          </div>
+          <div style="font-size:11px;color:#64748b;margin-top:6px">全体の14.5%</div>
+          <div style="margin-top:12px"><button class="btn btn-outline"
+              style="padding:5px 12px;font-size:11px;width:100%" onclick="notify('配信対象に設定しました')">配信対象に設定</button></div>
+        </div>
+        <div class="card">
+          <div class="card-title">休眠ユーザー <span class="tag tag-red">124名</span></div>
+          <div style="font-size:12px;color:#94a3b8;margin-bottom:12px">30日以上アクティビティなし</div>
+          <div class="progress">
+            <div class="progress-fill" style="width:9%;background:linear-gradient(90deg,#ef4444,#f59e0b)"></div>
+          </div>
+          <div style="font-size:11px;color:#64748b;margin-top:6px">全体の9.7%</div>
+          <div style="margin-top:12px"><button class="btn btn-outline"
+              style="padding:5px 12px;font-size:11px;width:100%" onclick="notify('配信対象に設定しました')">配信対象に設定</button></div>
+        </div>
+        <div class="card"
+          style="border:1px dashed #2d3748;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;cursor:pointer;min-height:160px"
+          onclick="notify('セグメントを作成しました')">
+          <div style="font-size:30px">＋</div>
+          <div style="font-size:13px;color:#64748b">新規セグメント作成</div>
+        </div>
+      </div>
+    </div>
+    <div class="page" id="page-settings">
+      <div class="page-header">
+        <div>
+          <div class="page-title">設定</div>
+          <div class="page-sub">アカウント・LINE連携の管理</div>
+        </div>
+        <button class="btn btn-primary" onclick="notify('設定を保存しました')">💾 保存</button>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">LINE Bot 連携</div>
+          <div class="form-group">
+            <div class="form-label">チャンネルアクセストークン</div><input class="form-input" type="password"
+              value="eyJhbGciOiJIUzI1NiJ9.abc...xyz">
+          </div>
+          <div class="form-group">
+            <div class="form-label">チャンネルシークレット</div><input class="form-input" type="password" value="a1b2c3d4e5f6...">
+          </div>
+          <div class="form-group">
+            <div class="form-label">Webhook URL</div><input class="form-input" type="text"
+              value="https://line-harness.app/webhook/abc123">
+          </div>
+          <div style="display:flex;gap:10px;margin-top:8px"><button class="btn btn-outline"
+              onclick="notify('接続テスト成功！')">🔗 接続テスト</button><button class="btn btn-primary"
+              onclick="notify('設定を保存しました')">保存</button></div>
+        </div>
+        <div class="card">
+          <div class="card-title">通知設定</div>
+          <div style="display:flex;flex-direction:column;gap:16px">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <div style="font-size:13px;font-weight:600">配信完了通知</div>
+                <div style="font-size:11px;color:#64748b">配信が完了したときに通知</div>
+              </div>
+              <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <div style="font-size:13px;font-weight:600">新規友だち通知</div>
+                <div style="font-size:11px;color:#64748b">新しい友だちが追加されたとき</div>
+              </div>
+              <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <div style="font-size:13px;font-weight:600">週次レポート</div>
+                <div style="font-size:11px;color:#64748b">毎週月曜日にメールで送信</div>
+              </div>
+              <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">プロフィール</div>
+          <div class="form-group">
+            <div class="form-label">表示名</div><input class="form-input" type="text" value="りんちゃん">
+          </div>
+          <div class="form-group">
+            <div class="form-label">メールアドレス</div><input class="form-input" type="email" value="rin@example.com">
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">プラン情報</div>
+          <div
+            style="background:linear-gradient(135deg,#06c75515,#3b82f615);border:1px solid #06c75530;border-radius:10px;padding:16px;margin-bottom:16px">
+            <div style="font-size:13px;color:#06c755;font-weight:700;margin-bottom:4px">✨ Proプラン</div>
+            <div style="font-size:12px;color:#94a3b8">次回更新: 2026年4月26日</div>
+          </div>
+          <div class="stat-row"><span>友だち上限</span><span>1,284 / 5,000名</span></div>
+          <div class="stat-row"><span>月間配信数</span><span>3,672 / 無制限</span></div>
+          <div class="stat-row"><span>シナリオ数</span><span>3 / 20個</span></div>
+        </div>
+      </div>
+    </div>
   </div>
-</div>
+  <div class="modal-bg" id="user-modal" onclick="if(event.target===this)closeModal('user-modal')">
+    <div class="modal">
+      <div class="modal-title">👤 ユーザー追加</div>
+      <div class="form-row">
+        <div class="form-group">
+          <div class="form-label">名前</div><input class="form-input" placeholder="山田 太郎">
+        </div>
+        <div class="form-group">
+          <div class="form-label">LINE UID</div><input class="form-input" placeholder="U1234abcd...">
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="form-label">タグ</div><input class="form-input" placeholder="VIP, 購入済 ...">
+      </div>
+      <div style="display:flex;gap:10px;margin-top:20px;justify-content:flex-end"><button class="btn btn-outline"
+          onclick="closeModal('user-modal')">キャンセル</button><button class="btn btn-primary"
+          onclick="closeModal('user-modal');notify('ユーザーを追加しました')">追加する</button></div>
+    </div>
+  </div>
+  <div class="modal-bg" id="msg-modal" onclick="if(event.target===this)closeModal('msg-modal')">
+    <div class="modal">
+      <div class="modal-title">✉️ メッセージ作成</div>
+      <div class="form-group">
+        <div class="form-label">タイトル</div><input class="form-input" placeholder="メッセージタイトル">
+      </div>
+      <div class="form-group">
+        <div class="form-label">ターゲット</div><select class="form-input">
+          <option>全ユーザー</option>
+          <option>VIPセグメント</option>
+          <option>新規ユーザー</option>
+          <option>リピーター</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <div class="form-label">メッセージ内容</div><textarea class="form-input" rows="4" placeholder="メッセージを入力..."></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <div class="form-label">配信日</div><input class="form-input" type="date">
+        </div>
+        <div class="form-group">
+          <div class="form-label">配信時刻</div><input class="form-input" type="time" value="10:00">
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:20px;justify-content:flex-end"><button class="btn btn-outline"
+          onclick="closeModal('msg-modal')">下書き保存</button><button class="btn btn-primary"
+          onclick="closeModal('msg-modal');notify('メッセージを予約しました')">予約する</button></div>
+    </div>
+  </div>
+  <div class="modal-bg" id="scenario-modal" onclick="if(event.target===this)closeModal('scenario-modal')">
+    <div class="modal">
+      <div class="modal-title">🔄 シナリオ作成</div>
+      <div class="form-group">
+        <div class="form-label">シナリオ名</div><input class="form-input" placeholder="例: 購入後フォロー">
+      </div>
+      <div class="form-group">
+        <div class="form-label">トリガー</div><select class="form-input">
+          <option>友だち追加</option>
+          <option>購入完了</option>
+          <option>特定タグ付与</option>
+          <option>手動</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <div class="form-label">メモ</div><textarea class="form-input" rows="3" placeholder="シナリオの説明..."></textarea>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:20px;justify-content:flex-end"><button class="btn btn-outline"
+          onclick="closeModal('scenario-modal')">キャンセル</button><button class="btn btn-primary"
+          onclick="closeModal('scenario-modal');notify('シナリオを作成しました')">作成する</button></div>
+    </div>
+  </div>
+  <script>
+    function showPage(id, el) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      document.getElementById('page-' + id).classList.add('active');
+      el.classList.add('active');
+    }
+    function openModal(id) { document.getElementById(id).classList.add('open') }
+    function closeModal(id) { document.getElementById(id).classList.remove('open') }
+    function notify(msg) {
+      const n = document.getElementById('notif');
+      n.textContent = msg; n.classList.add('show');
+      setTimeout(() => n.classList.remove('show'), 2500);
+    }
+  </script>
 </body>
-</html></p></p></h3></h2></nav></div></div></h2>
-</body>
-  </style>
+
+</html>
